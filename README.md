@@ -1,2 +1,1 @@
-# MLAssignment2Bits2025AB05027
-Repo to address ML assignment 2 
+# ml-assignment-2-2025AB05027
