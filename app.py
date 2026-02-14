@@ -15,7 +15,7 @@ from models.utils import evaluate_model, clean_dataframe
 
 
 st.set_page_config(page_title="ML Assignment 2 - Classification Models", layout="wide")
-st.title("📌 ML Assignment 2 - Classification Models Demo")
+st.title("📌 ML Assignment 2 - Classification Models Demo - Loan Approval Prediction")
 
 
 @st.cache_resource
