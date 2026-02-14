@@ -51,3 +51,5 @@
     | Random Forest (Ensemble) | Excellent overall prediction, very few false negatives and closer to XGBoost model in performance| 
     | XGBoost (Ensemble)       | Best model across all teh 6 models implemented. Strong across the board as it can handle complex patterns & generalizes well| 
 
+# NOTE: 
+    This app loads pre-trained models from models/saved/ folder. Run python models/train_models.py if you want to retrain.”

@@ -39,6 +39,11 @@ def main():
     print(f"Minimum Feature Size: {X.shape[1]}")
     print(f"Minimum Instance Size: {X.shape[0]}")
 
+    # Save training feature column order (important for Streamlit inference)
+    feature_cols_path = os.path.join(SAVE_DIR, "feature_columns.pkl")
+    joblib.dump(list(X.columns), feature_cols_path)
+    print(f"✅ Saved feature columns -> {feature_cols_path}")
+
     # Encode target
     label_encoder = LabelEncoder()
     y_encoded = label_encoder.fit_transform(y)

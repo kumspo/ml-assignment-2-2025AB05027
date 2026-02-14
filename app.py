@@ -36,7 +36,6 @@ def load_metrics_table():
         return pd.read_csv(path)
     return None
 
-
 # -----------------------------
 # SIDEBAR
 # -----------------------------
@@ -79,7 +78,7 @@ except Exception as e:
     st.stop()
 
 # Drop unwanted columns if present
-test_df = clean_dataframe (test_df)
+test_df = clean_dataframe(test_df)
 
 # If user mistakenly uploaded target column
 if TARGET_COL in test_df.columns:
@@ -92,6 +91,8 @@ if TARGET_COL in test_df.columns:
 st.write("✅ Uploaded data preview:")
 st.dataframe(test_df.head(), use_container_width=True)
 
+
+
 # Load model + encoder
 try:
     model_path = os.path.join(SAVE_DIR, MODEL_FILES[model_name])
@@ -101,8 +102,13 @@ except Exception as e:
     st.error(f"Error loading saved models. Train first.\n\nDetails: {e}")
     st.stop()
 
-if hasattr(model, "feature_names_in_"):
-    expected_cols = model.feature_names_in_.tolist()
+@st.cache_resource
+def load_feature_columns():
+    path = os.path.join(SAVE_DIR, "feature_columns.pkl")
+    return joblib.load(path)
+
+try:
+    expected_cols = load_feature_columns()
 
     missing = [c for c in expected_cols if c not in test_df.columns]
     extra = [c for c in test_df.columns if c not in expected_cols]
@@ -113,11 +119,11 @@ if hasattr(model, "feature_names_in_"):
     if extra:
         st.warning(f"Extra columns ignored: {extra}")
 
+    #enforce same column order as training
     test_df = test_df[expected_cols]
 
-else:
-    st.warning("⚠️ Model does not expose feature_names_in_. Skipping strict column validation.")
-    expected_cols = test_df.columns.tolist()
+except Exception as e:
+    st.warning(f"⚠️ Could not load feature_columns.pkl. Skipping strict validation.\n\nDetails: {e}")
 
 # Predict
 try:
