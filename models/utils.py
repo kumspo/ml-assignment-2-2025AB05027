@@ -16,7 +16,7 @@ def evaluate_model(y_true, y_pred, y_prob=None):
 
     results["Accuracy"] = accuracy_score(y_true, y_pred)
     results["Precision"] = precision_score(y_true, y_pred, average="weighted", zero_division=0)
-    results["Recall"] = recall_score(y_true, y_pred, average="weighted", zero_division=0)
+    results["Recall"] = recall_score(y_true, y_pred, average="macro", zero_division=0)
     results["F1"] = f1_score(y_true, y_pred, average="weighted", zero_division=0)
     results["MCC"] = matthews_corrcoef(y_true, y_pred)
 
@@ -77,3 +77,6 @@ def split_X_y(df: pd.DataFrame):
     y = df[TARGET_COL]
 
     return X, y
+
+def to_dense(X):
+    return X.toarray() if hasattr(X, "toarray") else X

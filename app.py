@@ -11,7 +11,7 @@ from config import (
     SAVE_DIR, TARGET_COL,
     MODEL_FILES, LABEL_ENCODER_FILE, METRICS_FILE
 )
-from models.utils import evaluate_model
+from models.utils import evaluate_model, clean_dataframe
 
 
 st.set_page_config(page_title="ML Assignment 2 - Classification Models", layout="wide")
@@ -79,7 +79,7 @@ except Exception as e:
     st.stop()
 
 # Drop unwanted columns if present
-test_df = config.DROP_COLS_IF_PRESENT(test_df)
+test_df = clean_dataframe (test_df)
 
 # If user mistakenly uploaded target column
 if TARGET_COL in test_df.columns:

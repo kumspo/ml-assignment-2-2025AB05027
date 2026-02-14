@@ -15,12 +15,10 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
 from sklearn.preprocessing import FunctionTransformer
+from datetime import datetime
 
 from config import DATA_PATH, TARGET_COL, SAVE_DIR, RANDOM_STATE, TEST_SIZE
-from models.utils import evaluate_model, clean_dataframe, split_X_y
-
-def to_dense(x):
-    return x.toarray() if hasattr(x, "toarray") else x
+from models.utils import evaluate_model, clean_dataframe, split_X_y,to_dense
 
 def main():
     print("Loading dataset...")
@@ -79,9 +77,12 @@ def main():
 
     # Models
     models = {
-        "logistic": LogisticRegression(max_iter=2000),
+        "logistic": LogisticRegression(max_iter=5000,solver="liblinear",
+                                       penalty="l2",
+                                       C=1.0,
+                                       class_weight="balanced"),
         "dt": DecisionTreeClassifier(random_state=RANDOM_STATE),
-        "knn": KNeighborsClassifier(n_neighbors=5),
+        "knn": KNeighborsClassifier(n_neighbors=15,weights="distance", metric="manhattan"),
         "nb": GaussianNB(),
         "rf": RandomForestClassifier(n_estimators=200, random_state=RANDOM_STATE),
         "xgb": XGBClassifier(
@@ -96,8 +97,6 @@ def main():
     }
 
     os.makedirs(SAVE_DIR, exist_ok=True)
-    # For training logs to be appended
-    open(os.path.join(SAVE_DIR, "training_errors.txt"), "w").close()
 
     metrics_table = []
     failed_models = []
@@ -121,7 +120,6 @@ def main():
                     ("preprocessor", preprocessor),
                     ("model", model)
                 ])
-
             clf.fit(X_train, y_train)
             y_pred = clf.predict(X_test)
 
@@ -151,10 +149,10 @@ def main():
             with open(log_path, "a", encoding="utf-8") as f:
                 f.write("\n==============================\n")
                 f.write(f"MODEL FAILED: {name}\n")
+                f.write(f"TIME: {datetime.now()}\n")
                 f.write(str(e) + "\n\n")
                 f.write(traceback.format_exc())
                 f.write("\n")
-
             continue
 
     if failed_models:
