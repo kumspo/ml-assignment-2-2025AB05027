@@ -53,3 +53,7 @@
 
 # NOTE: 
     This app loads pre-trained models from models/saved/ folder. Run python models/train_models.py if you want to retrain.”
+
+# Instructions to test and see the metrics
+    1. Download Test data and upload the same to get teh predictions
+    2. Download True label data and uplaod the same to get the detailed metrics around Evaluation & Confusion matrix etc

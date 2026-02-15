@@ -9,7 +9,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 import config
 from config import (
     SAVE_DIR, TARGET_COL,
-    MODEL_FILES, LABEL_ENCODER_FILE, METRICS_FILE
+    MODEL_FILES, LABEL_ENCODER_FILE, METRICS_FILE, TEST_DATA_PATH,TEST_DATA_TRUE_LABELS_PATH
 )
 from models.utils import evaluate_model, clean_dataframe
 
@@ -44,10 +44,49 @@ st.sidebar.header("⚙️ Controls")
 model_name = st.sidebar.selectbox("Select a Model", list(MODEL_FILES.keys()))
 uploaded_file = st.sidebar.file_uploader("Upload CSV (Test Data)", type=["csv"])
 
+# -----------------------------
+# DOWNLOAD TEST DATA
+# -----------------------------
+st.sidebar.subheader("📥 Test Data")
+
+if os.path.exists(TEST_DATA_PATH):
+    test_data_df = pd.read_csv(TEST_DATA_PATH)
+
+    # Drop target column if present (just in case)
+    if TARGET_COL in test_data_df.columns:
+        test_data_df = test_data_df.drop(columns=[TARGET_COL])
+
+    st.sidebar.download_button(
+        label="⬇️ Download  Test CSV",
+        data=test_data_df.to_csv(index=False).encode("utf-8"),
+        file_name="test_data.csv",
+        mime="text/csv"
+    )
+else:
+    st.sidebar.warning("Test data file not found in data/ folder.")
+
+# -----------------------------
+# DOWNLOAD TEST DATA TRUE LABELS
+# -----------------------------
+st.sidebar.subheader("📥 TRUE Labels, Test Data")
+
+if os.path.exists(TEST_DATA_TRUE_LABELS_PATH):
+    test_data_tl_df = pd.read_csv(TEST_DATA_TRUE_LABELS_PATH)
+
+    st.sidebar.download_button(
+        label="⬇️ Download  True Label data CSV",
+        data=test_data_tl_df.to_csv(index=False).encode("utf-8"),
+        file_name="true_label_data.csv",
+        mime="text/csv"
+    )
+else:
+    st.sidebar.warning("True label data file not found in data/ folder.")
+
 st.sidebar.info(
     "📌 Upload a CSV file containing the same feature columns as training data.\n\n"
     f"⚠️ Do NOT include the target column ({TARGET_COL}) in uploaded test CSV."
 )
+
 
 # -----------------------------
 # SHOW TRAINING METRICS TABLE
@@ -90,7 +129,6 @@ if TARGET_COL in test_df.columns:
 
 st.write("✅ Uploaded data preview:")
 st.dataframe(test_df.head(), use_container_width=True)
-
 
 
 # Load model + encoder
@@ -152,12 +190,12 @@ st.download_button(
 )
 
 # -----------------------------
-# OPTIONAL: Evaluate if labels provided
+# Evaluate if labels provided
 # -----------------------------
-st.subheader("📌 Evaluate on Test Labels (Optional)")
+st.subheader("📌 Evaluate on Test Labels")
 st.write("Upload a separate labels CSV to evaluate metrics + confusion matrix.")
 
-true_labels_file = st.file_uploader("Upload True Labels CSV (Optional)", type=["csv"])
+true_labels_file = st.file_uploader("Upload True Labels CSV ", type=["csv"])
 
 if true_labels_file is not None:
     try:

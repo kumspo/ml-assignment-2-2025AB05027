@@ -1,6 +1,8 @@
 DATA_PATH = "data/loan_approval_dataset.csv"
 TARGET_COL = "loan_status"
 SAVE_DIR = "models/saved"
+TEST_DATA_PATH = "data/Test_loan_data.csv"
+TEST_DATA_TRUE_LABELS_PATH = "data/Test_loan_data_TrueLabels.csv"
 
 RANDOM_STATE = 42
 TEST_SIZE = 0.2
